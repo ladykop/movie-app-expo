@@ -31,3 +31,5 @@ export const getMovieExternalIds = async (movieId) => {
   const response = await tmdb.get(`/movie/${movieId}/external_ids`);
   return response.data;
 };
+
+
