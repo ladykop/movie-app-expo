@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
-import Swiper from "react-native-swiper";
 
 import {
   getPopularMovies,
@@ -57,24 +56,28 @@ export default function HomeScreen({ navigation }) {
     setMoviesByGenre(movies);
   };
 
+  const handleMoviePress = (movie) => {
+    // Navigate to MovieDetails and pass movie object
+    navigation.navigate("MovieDetails", { movie });
+  };
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#000" }} showsVerticalScrollIndicator={false}>
       
-      {/* Featured / Popular movies Swiper */}
-      <View style={{ height: 280, marginTop: 10 }}>
-        <Swiper
-          autoplay
-          showsPagination
-          dotColor="rgba(255,255,255,0.3)"
-          activeDotColor="#e50914"
-          containerStyle={{ marginBottom: 10 }}
+      {/* Featured / Popular movies */}
+      <View style={{ height: 270, marginTop: 10 }}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          pagingEnabled
+          contentContainerStyle={{ paddingHorizontal: 10 }}
         >
           {popularMovies.map((movie) => (
             <TouchableOpacity
               key={movie.id}
-              onPress={() => navigation.navigate("Details", { movie })}
+              onPress={() => handleMoviePress(movie)}
               activeOpacity={0.9}
-              style={{ alignItems: "center" }}
+              style={{ marginRight: 10 }}
             >
               <Image
                 source={{
@@ -83,31 +86,17 @@ export default function HomeScreen({ navigation }) {
                     : placeholder,
                 }}
                 style={{
-                  width: 180,   // slightly larger than category cards (120)
-                  height: 270,  // proportional height
+                  width: 180,
+                  height: 270,
                   borderRadius: 12,
                 }}
               />
-              <Text
-                style={{
-                  color: "#fff",
-                  marginTop: 6,
-                  fontSize: 16,
-                  fontWeight: "bold",
-                  width: 180,
-                  textAlign: "center",
-                }}
-                numberOfLines={1}
-              >
-                {movie.title}
-              </Text>
             </TouchableOpacity>
           ))}
-        </Swiper>
+        </ScrollView>
       </View>
 
-
-      {/* Categories (Now Playing / Top Rated) */}
+      {/* Categories */}
       {categories.map((category, index) => (
         <View key={index}>
           <Text style={styles.sectionTitle}>{category.name}</Text>
@@ -115,7 +104,7 @@ export default function HomeScreen({ navigation }) {
             {moviesByCategory[index]?.map((movie) => (
               <TouchableOpacity
                 key={movie.id}
-                onPress={() => navigation.navigate("Details", { movie })}
+                onPress={() => handleMoviePress(movie)}
                 style={{ marginRight: 10 }}
               >
                 <Image
@@ -151,7 +140,7 @@ export default function HomeScreen({ navigation }) {
         {moviesByGenre.map((movie) => (
           <TouchableOpacity
             key={movie.id}
-            onPress={() => navigation.navigate("Details", { movie })}
+            onPress={() => handleMoviePress(movie)}
             style={{ marginRight: 10 }}
           >
             <Image
@@ -167,23 +156,6 @@ export default function HomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  poster: {
-    width: SCREEN_WIDTH - 40,
-    height: 250,
-    borderRadius: 12,
-    marginHorizontal: 20,
-  },
-  posterTitle: {
-    position: "absolute",
-    bottom: 10,
-    left: 30,
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-    textShadowColor: "#000",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 4,
-  },
   sectionTitle: {
     color: "#fff",
     fontSize: 18,
