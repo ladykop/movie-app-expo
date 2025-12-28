@@ -22,7 +22,7 @@ const placeholder = "https://via.placeholder.com/200x300.png?text=No+Image";
 
 export default function HomeScreen({ navigation }) {
   const { user } = useContext(AuthContext);
-  const insets = useSafeAreaInsets(); // Hook to get device-specific spacing
+  const insets = useSafeAreaInsets();
   
   const [popularMovies, setPopularMovies] = useState([]);
   const [categories] = useState([
@@ -72,32 +72,33 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.mainContainer}>
       <StatusBar barStyle="light-content" />
       
-      {/* --- SAFE AREA HEADER --- */}
+      {/* --- HEADER WITH USER CAPSULE --- */}
       <View style={[
         styles.header, 
-        { paddingTop: insets.top + 10 } // Dynamically adds space for the notch/status bar
+        { paddingTop: insets.top + 10 }
       ]}>
         {user ? (
-          <View style={styles.userProfile}>
-            <View style={styles.avatarContainer}>
-              <View style={styles.avatarBadge}>
-                <Text style={styles.avatarLetter}>
-                  {user.email?.charAt(0).toUpperCase()}
-                </Text>
-              </View>
-              <View style={styles.onlineStatus} />
+          <TouchableOpacity 
+            style={styles.userCapsule} 
+            onPress={() => navigation.navigate("Profile")}
+          >
+            <View style={styles.avatarMini}>
+              <Text style={styles.avatarLetter}>
+                {user.email?.charAt(0).toUpperCase()}
+              </Text>
+              <View style={styles.onlineStatusMini} />
             </View>
             <Text style={styles.headerUsername} numberOfLines={1}>
               {user.displayName || user.email.split('@')[0]}
             </Text>
-          </View>
+          </TouchableOpacity>
         ) : (
-          <Text style={styles.brandTitle}>BigRedButton</Text>
+          <Image 
+            source={require("../assets/title.png")} 
+            style={styles.brandImage}
+            resizeMode="contain" 
+          />
         )}
-
-        <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-           <Text style={styles.profileBtnText}>{user ? "Account" : "Sign In"}</Text>
-        </TouchableOpacity>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -162,7 +163,6 @@ export default function HomeScreen({ navigation }) {
           ))}
         </ScrollView>
         
-        {/* Bottom Spacing for Navigation Bars */}
         <View style={{ height: insets.bottom + 20 }} />
       </ScrollView>
     </View>
@@ -176,39 +176,65 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     paddingBottom: 15,
     backgroundColor: "#000",
     borderBottomWidth: 1,
     borderBottomColor: "#1a1a1a",
-    // We handle paddingTop dynamically in the component
   },
-  userProfile: { flexDirection: "row", alignItems: "center" },
-  avatarContainer: { position: "relative" },
-  avatarBadge: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: "#222",
-    justifyContent: "center",
-    alignItems: "center",
+
+  // --- NEW USER CAPSULE STYLES ---
+  userCapsule: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+    padding: 5,
+    paddingRight: 15,
+    borderRadius: 30,
     borderWidth: 1,
-    borderColor: "#333",
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
-  avatarLetter: { color: "#fff", fontWeight: "bold", fontSize: 14 },
-  onlineStatus: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "#39FF14", 
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    borderWidth: 2,
-    borderColor: "#000",
+  avatarMini: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#FF0000', 
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  headerUsername: { color: "#fff", marginLeft: 10, fontSize: 16, fontWeight: "600" },
-  brandTitle: { color: "#FF0000", fontSize: 22, fontWeight: "900", letterSpacing: -1 },
+  avatarLetter: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  onlineStatusMini: {
+    width: 9,
+    height: 9,
+    borderRadius: 4.5,
+    backgroundColor: '#39FF14',
+    position: 'absolute',
+    bottom: -1,
+    right: -1,
+    borderWidth: 1.5,
+    borderColor: '#000',
+  },
+  headerUsername: {
+    color: "#fff",
+    marginLeft: 8,
+    fontSize: 14,
+    fontWeight: "600",
+    maxWidth: 120,
+  },
+  // ------------------------------
+
+  brandImage: {
+    width: 150,
+    height: 30,    
+  },
+  actionBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
   profileBtnText: { color: "#FF0000", fontWeight: "bold", fontSize: 14 },
 
   featuredList: { paddingHorizontal: 15, paddingVertical: 15 },
