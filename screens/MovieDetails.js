@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   View,
@@ -14,8 +14,9 @@ import {
 } from "react-native";
 import { WebView } from "react-native-webview";
 import { useNavigation } from "@react-navigation/native";
-import { MaterialIcons } from "@expo/vector-icons"; // Standard library in Expo
+import { MaterialIcons } from "@expo/vector-icons";
 import { getMovieDetails, getMovieTrailer, getMovieExternalIds } from "../services/movieService";
+import { AuthContext } from "../context/AuthContext";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const placeholder = "https://via.placeholder.com/200x300.png?text=No+Image";
@@ -23,6 +24,7 @@ const placeholder = "https://via.placeholder.com/200x300.png?text=No+Image";
 export default function MovieDetails({ route }) {
   const { movie } = route.params;
   const navigation = useNavigation();
+  const { user } = useContext(AuthContext);
 
   const [details, setDetails] = useState({});
   const [trailerKey, setTrailerKey] = useState(null);
@@ -52,6 +54,7 @@ export default function MovieDetails({ route }) {
   }, [movie.id]);
 
   const handleWatch = () => {
+    // This only triggers if user is logged in because the button is disabled otherwise
     if (imdbId) {
       setWatchUrl(`https://vidsrc.me/embed/movie?imdb=${imdbId}`);
     } else {
@@ -61,7 +64,6 @@ export default function MovieDetails({ route }) {
 
   return (
     <View style={styles.container}>
-      {/* Enhanced Back Button Header */}
       <SafeAreaView style={styles.topBar}>
         <TouchableOpacity 
           style={styles.backButton} 
@@ -80,7 +82,6 @@ export default function MovieDetails({ route }) {
           </View>
         ) : (
           <>
-            {/* Header Section */}
             <View style={styles.header}>
               <Image
                 source={{
@@ -100,13 +101,13 @@ export default function MovieDetails({ route }) {
               </View>
             </View>
 
-            {/* Trailer Section */}
+            {/* Trailer Section - Always Available */}
             {trailerKey && (
               <View style={styles.videoSection}>
                 <Text style={styles.sectionTitle}>Trailer</Text>
                 {Platform.OS === "web" ? (
                   <iframe
-                    src={`https://www.youtube.com/embed/${trailerKey}?rel=0&origin=http://localhost:19006`}
+                    src={`https://www.youtube.com/embed/${trailerKey}?rel=0`}
                     width={SCREEN_WIDTH - 20}
                     height="220"
                     style={{ borderRadius: 12, border: "none", marginHorizontal: 10 }}
@@ -117,56 +118,51 @@ export default function MovieDetails({ route }) {
                     style={styles.webview}
                     javaScriptEnabled={true}
                     domStorageEnabled={true}
-                    allowsInlineMediaPlayback={true}
-                    allowsFullscreenVideo={true}
-                    userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-                    source={{
-                      uri: `https://www.youtube.com/embed/${trailerKey}?modestbranding=1&rel=0&enablejsapi=1&origin=http://localhost:19006`,
-                    }}
+                    source={{ uri: `https://www.youtube.com/embed/${trailerKey}` }}
                   />
                 )}
               </View>
             )}
 
-            {/* Description Section */}
             <View style={styles.description}>
               <Text style={styles.descriptionText}>{details.overview}</Text>
             </View>
 
-            {/* Watch Button */}
+            {/* Watch Button - Disabled if not logged in */}
             <View style={styles.watchButton}>
               <Button
-                title="Watch Movie Full HD 🎬"
+                title={user ? "Watch Movie Full HD 🎬" : "Login to Watch 🔒"}
                 color="#e50914"
                 onPress={handleWatch}
+                disabled={!user} 
               />
+              {!user && (
+                <Text style={styles.loginHint}>
+                  Unlock the full movie by signing in on the Profile tab.
+                </Text>
+              )}
             </View>
 
-            {/* Movie Player Section */}
+            {/* Movie Player Section - Restored Web & Mobile logic */}
             {watchUrl && (
               <View style={styles.videoSection}>
+                <Text style={styles.sectionTitle}>Movie Player</Text>
                 {Platform.OS === "web" ? (
                   <iframe
                     src={watchUrl}
                     width={SCREEN_WIDTH - 20}
-                    height="250"
+                    height="400"
                     style={{ borderRadius: 12, border: "none", marginHorizontal: 10 }}
                     allowFullScreen
                   />
                 ) : (
                   <WebView
-                    style={styles.webview}
+                    style={[styles.webview, { height: 250 }]}
                     originWhitelist={["*"]}
                     javaScriptEnabled={true}
                     domStorageEnabled={true}
                     allowsInlineMediaPlayback={true}
                     allowsFullscreenVideo={true}
-                    onShouldStartLoadWithRequest={(request) => {
-                      return (
-                        request.url.includes("vidsrc") ||
-                        request.url.includes("google")
-                      );
-                    }}
                     source={{ uri: watchUrl }}
                   />
                 )}
@@ -180,61 +176,21 @@ export default function MovieDetails({ route }) {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: "#000" 
-  },
-  topBar: {
-    backgroundColor: "#000",
-    zIndex: 10,
-  },
-  backButton: {
-    width: 50,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    marginLeft: 10,
-    marginTop: Platform.OS === "android" ? 30 : 0, // Space for Android status bar
-  },
-  loader: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 100,
-  },
-  header: {
-    flexDirection: "row",
-    marginHorizontal: 20,
-    marginTop: 10,
-  },
+  container: { flex: 1, backgroundColor: "#000" },
+  topBar: { backgroundColor: "#000", zIndex: 10 },
+  backButton: { width: 50, height: 50, justifyContent: "center", alignItems: "center", marginLeft: 10, marginTop: Platform.OS === "android" ? 30 : 0 },
+  loader: { flex: 1, justifyContent: "center", alignItems: "center", marginTop: 100 },
+  header: { flexDirection: "row", marginHorizontal: 20, marginTop: 10 },
   poster: { width: 120, height: 180, borderRadius: 10 },
   headerText: { flex: 1, marginLeft: 20, justifyContent: "center" },
   title: { color: "#fff", fontSize: 22, fontWeight: "bold" },
-  rating: {
-    marginTop: 10,
-    backgroundColor: "#e50914",
-    alignSelf: "flex-start",
-    borderRadius: 4,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-  },
+  rating: { marginTop: 10, backgroundColor: "#e50914", alignSelf: "flex-start", borderRadius: 4, paddingVertical: 4, paddingHorizontal: 8 },
   ratingText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
   videoSection: { marginTop: 20, marginBottom: 10 },
-  sectionTitle: {
-    color: "#fff",
-    marginLeft: 20,
-    marginBottom: 10,
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  webview: {
-    width: SCREEN_WIDTH - 20,
-    height: 220,
-    borderRadius: 12,
-    marginHorizontal: 10,
-    backgroundColor: "#000",
-  },
+  sectionTitle: { color: "#fff", marginLeft: 20, marginBottom: 10, fontSize: 18, fontWeight: "600" },
+  webview: { width: SCREEN_WIDTH - 20, height: 220, borderRadius: 12, marginHorizontal: 10, backgroundColor: "#000" },
   description: { marginHorizontal: 20, marginTop: 10 },
   descriptionText: { color: "#fff", fontSize: 16, lineHeight: 24 },
   watchButton: { marginHorizontal: 20, marginTop: 20, marginBottom: 10 },
+  loginHint: { color: "#888", fontSize: 12, textAlign: "center", marginTop: 8 }
 });

@@ -1,8 +1,12 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createNativeStackNavigator } from "@react-navigation/native-stack"; // Stack navigation
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
+// Import your AuthProvider
+import { AuthProvider } from "./context/AuthContext";
 
 import HomeScreen from "./screens/HomeScreen";
 import SearchScreen from "./screens/SearchScreen";
@@ -12,7 +16,7 @@ import MovieDetails from "./screens/MovieDetails";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// Bottom tabs
+// Bottom tabs navigation
 function Tabs() {
   return (
     <Tab.Navigator
@@ -28,6 +32,7 @@ function Tabs() {
         },
         tabBarActiveTintColor: "#e50914",
         tabBarInactiveTintColor: "gray",
+        tabBarStyle: { backgroundColor: "#000", borderTopColor: "#333" }, // Netflix style
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
@@ -37,14 +42,20 @@ function Tabs() {
   );
 }
 
-// App container
+// Main App container
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="MainTabs" component={Tabs} />
-        <Stack.Screen name="MovieDetails" component={MovieDetails} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <AuthProvider> 
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            {/* The Tab navigator is inside the Stack */}
+            <Stack.Screen name="MainTabs" component={Tabs} />
+            {/* MovieDetails is outside the tabs so it can cover the full screen */}
+            <Stack.Screen name="MovieDetails" component={MovieDetails} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }
