@@ -1,6 +1,6 @@
 import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from "@expo/vector-icons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"; // Bottom navigation
+import { Ionicons } from "@expo/vector-icons"; // Built-in Expo icons
 
 import HomeScreen from "./screens/HomeScreen";
 import SearchScreen from "./screens/SearchScreen";
@@ -14,7 +14,7 @@ export default function App() {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           headerShown: false,
-          tabBarShowLabel: false,
+          tabBarShowLabel: true, // false -> show only icons
 
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
