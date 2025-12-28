@@ -7,9 +7,9 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
-  SafeAreaView,
-  Platform,
+  Image,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context"; // Added
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
@@ -26,14 +26,13 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 export default function Profile() {
   const { user } = useContext(AuthContext);
+  const insets = useSafeAreaInsets(); // Get safe area insets
+  
   const [loading, setLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  
-  // Status message for Web & Mobile compatibility
-  const [statusMsg, setStatusMsg] = useState({ text: "", type: "" }); // type: 'error' or 'success'
+  const [statusMsg, setStatusMsg] = useState({ text: "", type: "" });
 
-  // Form States
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -53,17 +52,14 @@ export default function Profile() {
     }
   }, [user]);
 
-  // Helper to show messages
   const showMessage = (text, type = "error") => {
     setStatusMsg({ text, type });
-    // Auto-hide after 5 seconds
     setTimeout(() => setStatusMsg({ text: "", type: "" }), 5000);
   };
 
   const handleRegister = async () => {
     if (password !== confirmPassword) return showMessage("Passwords do not match");
     if (username.trim().length < 3) return showMessage("Username too short");
-
     setLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -73,9 +69,7 @@ export default function Profile() {
         createdAt: new Date(),
       });
       showMessage("Account created!", "success");
-    } catch (error) {
-      showMessage(error.message);
-    }
+    } catch (error) { showMessage(error.message); }
     setLoading(false);
   };
 
@@ -83,10 +77,7 @@ export default function Profile() {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      showMessage("Welcome back!", "success");
-    } catch (error) {
-      showMessage("Invalid email or password");
-    }
+    } catch (error) { showMessage("Invalid email or password"); }
     setLoading(false);
   };
 
@@ -94,37 +85,27 @@ export default function Profile() {
     setLoading(true);
     try {
       await updateDoc(doc(db, "users", user.uid), { username: username });
-
       if (password !== "" && currentPassword !== "") {
         if (password !== confirmPassword) throw new Error("New passwords do not match");
         const credential = EmailAuthProvider.credential(user.email, currentPassword);
         await reauthenticateWithCredential(user, credential);
         await updatePassword(user, password);
       }
-
       showMessage("Profile updated!", "success");
       setIsEditing(false);
       setCurrentPassword(""); setPassword(""); setConfirmPassword("");
-    } catch (error) {
-      showMessage(error.message);
-    }
+    } catch (error) { showMessage(error.message); }
     setLoading(false);
   };
 
   const handleDeleteAccount = async () => {
     setLoading(true);
     try {
-      // 1. Delete from Firestore first
       await deleteDoc(doc(db, "users", user.uid));
-      // 2. Delete from Auth
       await deleteUser(user);
-    } catch (error) {
-      showMessage("Please logout and login again to confirm deletion.");
-    }
+    } catch (error) { showMessage("Please login again to confirm deletion."); }
     setLoading(false);
   };
-
-  // --- UI COMPONENTS ---
 
   const StatusDisplay = () => statusMsg.text ? (
     <View style={[styles.statusBanner, statusMsg.type === "success" ? styles.successBg : styles.errorBg]}>
@@ -132,10 +113,11 @@ export default function Profile() {
     </View>
   ) : null;
 
+  // --- LOGGED IN UI ---
   if (user) {
     return (
-      <SafeAreaView style={styles.container}>
-        <ScrollView contentContainerStyle={styles.padding}>
+      <View style={[styles.container, { paddingTop: insets.top }]}>
+        <ScrollView contentContainerStyle={[styles.padding, { paddingBottom: insets.bottom + 20 }]}>
           <StatusDisplay />
           <View style={styles.headerRow}>
             <Text style={styles.title}>Account</Text>
@@ -147,14 +129,14 @@ export default function Profile() {
           {!isEditing ? (
             <View style={styles.profileInfoCard}>
               <View style={styles.infoItem}>
-                <MaterialIcons name="person" size={24} color="#e50914" />
+                <MaterialIcons name="person" size={24} color="#FF0000" />
                 <View style={styles.infoTextContainer}>
                   <Text style={styles.infoLabel}>Username</Text>
                   <Text style={styles.infoValue}>{username || "No username"}</Text>
                 </View>
               </View>
               <View style={styles.infoItem}>
-                <MaterialIcons name="email" size={24} color="#e50914" />
+                <MaterialIcons name="email" size={24} color="#FF0000" />
                 <View style={styles.infoTextContainer}>
                   <Text style={styles.infoLabel}>Email</Text>
                   <Text style={styles.infoValue}>{user.email}</Text>
@@ -171,7 +153,7 @@ export default function Profile() {
               <TextInput style={styles.input} placeholder="New Password" secureTextEntry value={password} onChangeText={setPassword} placeholderTextColor="#555" />
               <TextInput style={styles.input} placeholder="Confirm New Password" secureTextEntry value={confirmPassword} onChangeText={setConfirmPassword} placeholderTextColor="#555" />
 
-              {loading ? <ActivityIndicator color="#e50914" /> : (
+              {loading ? <ActivityIndicator color="#FF0000" /> : (
                 <TouchableOpacity style={styles.primaryBtn} onPress={handleUpdateProfile}>
                   <Text style={styles.buttonText}>Save Changes</Text>
                 </TouchableOpacity>
@@ -190,15 +172,22 @@ export default function Profile() {
             </>
           )}
         </ScrollView>
-      </SafeAreaView>
+      </View>
     );
   }
 
+  // --- AUTH UI ---
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.authContainer}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <ScrollView contentContainerStyle={[styles.authContainer, { paddingBottom: insets.bottom + 20 }]}>
         <StatusDisplay />
-        <Text style={styles.title}>{isRegistering ? "Join Us" : "Welcome Back"}</Text>
+        <View style={styles.logoContainer}>
+          <Image 
+            source={require("../assets/logo.png")} 
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>        
         
         {isRegistering && (
           <TextInput style={styles.input} placeholder="Username" value={username} onChangeText={setUsername} placeholderTextColor="#555" />
@@ -212,7 +201,7 @@ export default function Profile() {
         )}
 
         {loading ? (
-          <ActivityIndicator color="#e50914" size="large" />
+          <ActivityIndicator color="#FF0000" size="large" />
         ) : (
           <TouchableOpacity style={styles.primaryBtn} onPress={isRegistering ? handleRegister : handleLogin}>
             <Text style={styles.buttonText}>{isRegistering ? "Create Account" : "Sign In"}</Text>
@@ -224,28 +213,28 @@ export default function Profile() {
             {isRegistering ? "Already have an account? Login" : "New here? Create an account"}
           </Text>
         </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#000" },
   padding: { padding: 20 },
-  authContainer: { flex: 1, justifyContent: "center", padding: 25 },
+  authContainer: { flexGrow: 1, justifyContent: "center", padding: 25 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30 },
-  title: { color: "#fff", fontSize: 32, fontWeight: "bold", marginBottom: 10 },
-  editToggleText: { color: "#e50914", fontWeight: 'bold', fontSize: 16 },
+  title: { color: "#fff", fontSize: 32, fontWeight: "bold" },
+  editToggleText: { color: "#FF0000", fontWeight: 'bold', fontSize: 16 },
   profileInfoCard: { backgroundColor: "#111", borderRadius: 12, padding: 20, marginBottom: 20 },
   infoItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
   infoTextContainer: { marginLeft: 15 },
   infoLabel: { color: "#888", fontSize: 12, textTransform: 'uppercase' },
   infoValue: { color: "#fff", fontSize: 18, fontWeight: '500' },
   card: { backgroundColor: "#111", padding: 15, borderRadius: 12, marginBottom: 20 },
-  label: { color: "#e50914", fontWeight: "bold", marginBottom: 10 },
+  label: { color: "#FF0000", fontWeight: "bold", marginBottom: 10 },
   input: { backgroundColor: "#222", color: "#fff", padding: 15, borderRadius: 8, marginBottom: 15 },
   divider: { height: 1, backgroundColor: '#333', marginVertical: 20 },
-  primaryBtn: { backgroundColor: "#e50914", padding: 15, borderRadius: 8, alignItems: "center" },
+  primaryBtn: { backgroundColor: "#FF0000", padding: 15, borderRadius: 8, alignItems: "center" },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
   logoutBtn: { backgroundColor: "#333", padding: 15, borderRadius: 8, alignItems: "center", marginTop: 10 },
   toggleText: { color: "#aaa", textAlign: "center" },
@@ -253,4 +242,6 @@ const styles = StyleSheet.create({
   errorBg: { backgroundColor: "rgba(255, 68, 68, 0.2)", borderLeftWidth: 4, borderLeftColor: "#ff4444" },
   successBg: { backgroundColor: "rgba(0, 200, 81, 0.2)", borderLeftWidth: 4, borderLeftColor: "#00c851" },
   statusText: { color: "#fff", fontSize: 14, fontWeight: "500" },
+  logoContainer: { alignItems: 'center', marginBottom: 20 },
+  logo: { width: 250, height: 200 },
 });

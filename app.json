@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "MovieApp",
-    "slug": "MovieApp",
+    "name": "BigRedButton",
+    "slug": "BRB",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/logo.png",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",

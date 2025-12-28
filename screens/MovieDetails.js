@@ -131,7 +131,7 @@ export default function MovieDetails({ route }) {
             {/* Watch Button - Disabled if not logged in */}
             <View style={styles.watchButton}>
               <Button
-                title={user ? "Watch Movie Full HD 🎬" : "Login to Watch 🔒"}
+                title={user ? "Watch Movie Full HD" : "Login to Watch"}
                 color="#e50914"
                 onPress={handleWatch}
                 disabled={!user} 
