@@ -16,9 +16,9 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
       
       if (authenticatedUser) {
-        console.log("🔥 Firebase Connected: User is logged in as:", authenticatedUser.email);
+        console.log("[+] Firebase Connected: User is logged in as:", authenticatedUser.email);
       } else {
-        console.log("☁️ Firebase Connected: No user logged in.");
+        console.log("[-] Firebase Connected: No user logged in.");
       }
     });
 

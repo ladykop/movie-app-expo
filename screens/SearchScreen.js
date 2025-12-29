@@ -66,7 +66,7 @@ export default function SearchScreen() {
     return () => clearTimeout(delayDebounceFn);
   }, [query, selectedGenre]);
 
-  // Updated List Item Layout
+  // List Item Layout
   const renderMovieItem = ({ item }) => (
     <TouchableOpacity
       style={styles.movieListItem}

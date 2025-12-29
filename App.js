@@ -1,11 +1,9 @@
-import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-// Import your AuthProvider
 import { AuthProvider } from "./context/AuthContext";
 
 import HomeScreen from "./screens/HomeScreen";
@@ -32,7 +30,7 @@ function Tabs() {
         },
         tabBarActiveTintColor: "#e50914",
         tabBarInactiveTintColor: "gray",
-        tabBarStyle: { backgroundColor: "#000", borderTopColor: "#333" }, // Netflix style
+        tabBarStyle: { backgroundColor: "#000", borderTopColor: "#333" },
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />

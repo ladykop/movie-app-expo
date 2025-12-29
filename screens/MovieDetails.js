@@ -9,7 +9,7 @@ import {
   Dimensions,
   Platform,
   ActivityIndicator,
-  TouchableOpacity,
+  TouchableOpacity, 
   SafeAreaView,
 } from "react-native";
 import { WebView } from "react-native-webview";

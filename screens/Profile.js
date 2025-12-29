@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Image,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context"; // Added
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
@@ -113,7 +113,7 @@ export default function Profile() {
     </View>
   ) : null;
 
-  // --- LOGGED IN UI ---
+  // LOGGED IN UI / EDIT PROFILE
   if (user) {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -176,7 +176,7 @@ export default function Profile() {
     );
   }
 
-  // --- AUTH UI ---
+  // AUTH UI (Login / Register)
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView contentContainerStyle={[styles.authContainer, { paddingBottom: insets.bottom + 20 }]}>

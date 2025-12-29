@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#1a1a1a",
   },
 
-  // --- NEW USER CAPSULE STYLES ---
+  // USER CAPSULE STYLE
   userCapsule: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -225,7 +225,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     maxWidth: 120,
   },
-  // ------------------------------
 
   brandImage: {
     width: 150,

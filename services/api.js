@@ -12,7 +12,7 @@ const tmdb = axios.create({
   },
 });
 
-// 1️⃣ Popular movies (for Swiper)
+// Popular movies (for Swiper)
 export const getPopularMovies = async (page = 1) => {
   try {
     const response = await tmdb.get("/movie/popular", { params: { page } });
@@ -31,7 +31,7 @@ export const getPopularMovies = async (page = 1) => {
   }
 };
 
-// 2️⃣ Movies by category (Now Playing / Top Rated)
+// Movies by category (Now Playing / Top Rated)
 export const getMoviesByCategory = async (endpoint, page = 1) => {
   try {
     const response = await tmdb.get(endpoint, { params: { page } });
@@ -50,7 +50,7 @@ export const getMoviesByCategory = async (endpoint, page = 1) => {
   }
 };
 
-// 3️⃣ Get all movie genres
+// Get all movie genres
 export const getGenres = async () => {
   try {
     const response = await tmdb.get("/genre/movie/list");
@@ -61,7 +61,7 @@ export const getGenres = async () => {
   }
 };
 
-// 4️⃣ Get movies by genre
+// Get movies by genre
 export const getMoviesByGenre = async (genreId, page = 1) => {
   try {
     const response = await tmdb.get("/discover/movie", {
