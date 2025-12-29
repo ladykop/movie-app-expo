@@ -1,4 +1,4 @@
-# Movie App Expo
+# Big Red Button
 A React Native mobile application built with Expo that allows users to browse, search, and watch movies. The app integrates with The Movie Database (TMDB) API for movie data and uses Firebase for user authentication and data storage.
 
 ## Features
