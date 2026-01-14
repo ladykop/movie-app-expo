@@ -15,6 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { searchMovies, getGenres, getMoviesByGenre } from "../services/movieSearch";
 
+// let you see screen, search movies by name or category, shows a list, tap a movie to see more.
 export default function SearchScreen() {
   const navigation = useNavigation();
   const [query, setQuery] = useState("");

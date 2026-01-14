@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// TMDB API configuration and movie fetching functions
 const API_KEY = "152f41397d36a9af171b938124f0281c";
 const BASE_URL = "https://api.themoviedb.org/3";
 

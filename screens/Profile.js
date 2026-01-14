@@ -107,6 +107,7 @@ export default function Profile() {
     setLoading(false);
   };
 
+
   const StatusDisplay = () => statusMsg.text ? (
     <View style={[styles.statusBanner, statusMsg.type === "success" ? styles.successBg : styles.errorBg]}>
       <Text style={styles.statusText}>{statusMsg.text}</Text>

@@ -1,20 +1,23 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons"; //comes with expo, we didnt install it, just icons
+import { SafeAreaProvider } from "react-native-safe-area-context"; //to handle safe areas on different devices
 
+// Importing AuthProvider for authentication context
 import { AuthProvider } from "./context/AuthContext";
 
+// Importing screens
 import HomeScreen from "./screens/HomeScreen";
 import SearchScreen from "./screens/SearchScreen";
 import Profile from "./screens/Profile";
 import MovieDetails from "./screens/MovieDetails"; 
 
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// Bottom tabs navigation
+// Bottom tabs navigation THIS IS fin kaynin the icons (home, search, profile)
 function Tabs() {
   return (
     <Tab.Navigator
@@ -40,7 +43,7 @@ function Tabs() {
   );
 }
 
-// Main App container
+// Main App container this is the layout fin kibanou movies and everything bhalla thye canvas
 export default function App() {
   return (
     <SafeAreaProvider>

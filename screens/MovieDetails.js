@@ -18,7 +18,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { getMovieDetails, getMovieTrailer, getMovieExternalIds } from "../services/movieService";
 import { AuthContext } from "../context/AuthContext";
 
-const SCREEN_WIDTH = Dimensions.get("window").width;
+const SCREEN_WIDTH = Dimensions.get("window").width; //knows the screen dimensions and gets sized accordingly
 const placeholder = "https://via.placeholder.com/200x300.png?text=No+Image";
 
 export default function MovieDetails({ route }) {
@@ -95,7 +95,7 @@ export default function MovieDetails({ route }) {
                 <Text style={styles.title}>{details.title}</Text>
                 <View style={styles.rating}>
                   <Text style={styles.ratingText}>
-                    {details.vote_average?.toFixed(1)}
+                     {details.vote_average?.toFixed(1)}
                   </Text>
                 </View>
               </View>

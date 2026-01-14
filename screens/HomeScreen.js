@@ -16,9 +16,9 @@ import {
   getMoviesByCategory,
   getGenres,
   getMoviesByGenre,
-} from "../services/api";
+} from "../services/api"; // Imported api functions
 
-const placeholder = "https://via.placeholder.com/200x300.png?text=No+Image";
+const placeholder = "https://via.placeholder.com/200x300.png?text=No+Image"; // so instead of typing the whole url, we just call "placeholder"
 
 export default function HomeScreen({ navigation }) {
   const { user } = useContext(AuthContext);
@@ -118,8 +118,8 @@ export default function HomeScreen({ navigation }) {
             </TouchableOpacity>
           ))}
         </ScrollView>
-
-        {/* Rows by Category */}
+        
+        {/* Rows by Category */} 
         {categories.map((category, index) => (
           <View key={category.name} style={styles.section}>
             <Text style={styles.sectionLabel}>{category.name}</Text>
