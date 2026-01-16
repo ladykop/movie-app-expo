@@ -21,6 +21,7 @@
       "barStyle": "dark-content"
     },
     "android": {
+      "package": "com.kopsillom.brb",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
@@ -29,6 +30,11 @@
     },
     "web": {
       "favicon": "./assets/favicon2.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "055613bc-2bbe-48de-aabd-5c20c64ec720"
+      }
     }
   }
 }

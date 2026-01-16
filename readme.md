@@ -118,3 +118,4 @@ The app uses TMDB API v3 with the following endpoints:
 - Requires user login to access watch functionality
 - Supports both IMDB and TMDB IDs for better compatibility
 - Embedded video player using WebView component
+
