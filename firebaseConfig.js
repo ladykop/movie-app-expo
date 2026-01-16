@@ -27,3 +27,4 @@ export const db = getFirestore(app);
 // expo.dev credentials
 // Username: kopsillom 
 // Password: 9/5sn,DG3~9O
+// https://expo.dev/accounts/kopsillom/projects/BRB/builds/21c41104-afdf-4097-83ea-f7d40e15ae5f
