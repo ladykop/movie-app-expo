@@ -11,6 +11,8 @@ import {
   ActivityIndicator,
   TouchableOpacity, 
   SafeAreaView,
+  Modal,
+  TextInput
 } from "react-native";
 import { WebView } from "react-native-webview";
 import { useNavigation } from "@react-navigation/native";
@@ -31,6 +33,11 @@ export default function MovieDetails({ route }) {
   const [isLoading, setIsLoading] = useState(true);
   const [watchUrl, setWatchUrl] = useState(null);
   const [imdbId, setImdbId] = useState(null);
+
+  //New Feature: PASSCODE
+  const [isUnlocked, setIsUnlocked] = useState(false); // State to track if content is unlocked
+  const [showPasscodeModal, setShowPasscodeModal] = useState(false);
+  const [passcode, setPasscode] = useState("");
 
   useEffect(() => {
     async function fetchData() {
@@ -131,14 +138,20 @@ export default function MovieDetails({ route }) {
             {/* Watch Button - Disabled if not logged in */}
             <View style={styles.watchButton}>
               <Button
-                title={user ? "Watch Movie Full HD" : "Login to Watch"}
+                title={user || isUnlocked ? "Watch Movie Full HD" : "Use code or login to Watch"}
                 color="#e50914"
-                onPress={handleWatch}
-                disabled={!user} 
+                onPress=
+                {() => {
+                  if (user || isUnlocked) {
+                    handleWatch();
+                  } else {
+                    setShowPasscodeModal(true);
+                  }
+                }}
               />
-              {!user && (
+              {!user && !isUnlocked && (
                 <Text style={styles.loginHint}>
-                  Unlock the full movie by signing in on the Profile tab.
+                  Login or use a Passcode.
                 </Text>
               )}
             </View>
@@ -171,6 +184,54 @@ export default function MovieDetails({ route }) {
           </>
         )}
       </ScrollView>
+      {/* Passcode Modal */}
+<Modal 
+  visible={showPasscodeModal} 
+  transparent 
+  animationType="slide" // Slide usually feels smoother than fade for passcodes
+  onRequestClose={() => setShowPasscodeModal(false)}
+>
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalBox}>
+      <MaterialIcons name="lock-outline" size={40} color="#e50914" style={{ alignSelf: 'center', marginBottom: 10 }} />
+      <Text style={styles.modalTitle}>Passcode Required</Text>
+      <Text style={styles.modalSubtitle}>Enter the 4-digit code to unlock Full HD streaming.</Text>
+
+      <TextInput
+        value={passcode}
+        onChangeText={setPasscode}
+        keyboardType="numeric"
+        secureTextEntry
+        maxLength={4}
+        style={styles.input}
+        placeholder="****"
+        placeholderTextColor="#444"
+      />
+
+      <TouchableOpacity 
+        style={styles.primaryButton} 
+        onPress={() => {
+          if (passcode === "0518") {
+            setIsUnlocked(true);
+            setShowPasscodeModal(false);
+            setPasscode("");
+          } else {
+            setPasscode("");
+          }
+        }}
+      >
+        <Text style={styles.buttonText}>Unlock Now</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => setShowPasscodeModal(false)}
+        style={styles.cancelButton}
+      >
+        <Text style={styles.cancelButtonText}>Cancel</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
     </View>
   );
 }
@@ -192,5 +253,72 @@ const styles = StyleSheet.create({
   description: { marginHorizontal: 20, marginTop: 10 },
   descriptionText: { color: "#fff", fontSize: 16, lineHeight: 24 },
   watchButton: { marginHorizontal: 20, marginTop: 20, marginBottom: 10 },
-  loginHint: { color: "#888", fontSize: 12, textAlign: "center", marginTop: 8 }
+  loginHint: { color: "#888", fontSize: 12, textAlign: "center", marginTop: 8 },
+modalOverlay: { 
+    flex: 1, 
+    justifyContent: "center", 
+    alignItems: "center", 
+    backgroundColor: "rgba(0,0,0,0.9)"
+  },
+  modalBox: { 
+    width: "85%", 
+    backgroundColor: "#1c1c1c", 
+    borderRadius: 20,
+    padding: 30,
+    borderWidth: 1,
+    borderColor: "#333",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 20,
+  },
+  modalTitle: { 
+    color: "#fff", 
+    fontSize: 22, 
+    fontWeight: "800", 
+    marginBottom: 8, 
+    textAlign: "center" 
+  },
+  modalSubtitle: { 
+    color: "#aaa", 
+    fontSize: 14, 
+    textAlign: "center", 
+    marginBottom: 20,
+    lineHeight: 20
+  },
+  input: { 
+    letterSpacing: 15,
+    borderWidth: 1.5, 
+    borderColor: "#e50914",
+    borderRadius: 12, 
+    padding: 15, 
+    color: "#fff", 
+    marginBottom: 20, 
+    textAlign: "center", 
+    fontSize: 28,
+    backgroundColor: "#000"
+  },
+  primaryButton: {
+    backgroundColor: "#e50914",
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center",
+    marginBottom: 10
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+    textTransform: "uppercase"
+  },
+  cancelButton: {
+    paddingVertical: 10,
+  },
+  cancelButtonText: {
+    color: "#777",
+    textAlign: "center",
+    fontSize: 14,
+    fontWeight: "600"
+  }
 });

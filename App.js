@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons"; //comes with expo, we didnt install it, just icons
 import { SafeAreaProvider } from "react-native-safe-area-context"; //to handle safe areas on different devices
+import * as NavigationBar from 'expo-navigation-bar';
 
 // Importing AuthProvider for authentication context
 import { AuthProvider } from "./context/AuthContext";
@@ -45,6 +47,12 @@ function Tabs() {
 
 // Main App container this is the layout fin kibanou movies and everything bhalla thye canvas
 export default function App() {
+
+  useEffect(() => {
+    NavigationBar.setBackgroundColorAsync("#000000");
+    NavigationBar.setButtonStyleAsync("dark");
+  }, []);
+
   return (
     <SafeAreaProvider>
       <AuthProvider> 

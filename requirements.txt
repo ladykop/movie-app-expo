@@ -9,3 +9,4 @@ react-native-safe-area-context
 react-native-swiper
 axios
 expo-screen-orientation
+expo-status-bar
