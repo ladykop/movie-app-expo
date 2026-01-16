@@ -6,7 +6,6 @@ node_modules/
 # firebase
 firebaseConfig.js
 eas.json
-Rapport.docx
 
 # Expo
 .expo/
